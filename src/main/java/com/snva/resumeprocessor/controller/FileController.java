@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 public class FileController {
@@ -22,6 +24,7 @@ public class FileController {
 
     // POST "/uploadfile"
 
+    @CrossOrigin(origins ="http://127.0.0.1:5500")
     @PostMapping("/uploadfile")
     public ResponseEntity<FileResponse> uploadSingleFile(@RequestParam("file")MultipartFile multipartFile){
        String upFile= iFileStorageService.saveFile(multipartFile);
@@ -33,14 +36,20 @@ public class FileController {
 
         return  ResponseEntity.status(HttpStatus.OK).body(new FileResponse(upFile,fileDownloadUri,"File Uploaded Successfully"));
     }
-
-    @PostMapping("/downloadfile")
+    @CrossOrigin(origins ="http://127.0.0.1:5500")
+    @GetMapping("/download/{fileName}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
         Resource upFile = iFileStorageService.loadFile(fileName);
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + upFile.getFilename() + "\"")
                 .body(upFile);
     }
+    @CrossOrigin(origins ="http://127.0.0.1:5500")
+    @GetMapping("/viewAllFiles")
+    public ResponseEntity<List> viewAllFIles() {
+        List<String> upFile = iFileStorageService.allFileNames();
+        
 
-
+        return ResponseEntity.status(HttpStatus.OK)         .body(upFile);
+    }
 
 }
